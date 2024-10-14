@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Draw - Spin and Win</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        h1::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: white;
+        }
+
+        .btn {
+            background-color: white;
+            color: #4facfe;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s ease-in-out;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .btn:hover {
+            background-color: #00f2fe;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border: 50px solid rgba(0, 242, 254, 0.2);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn.spin {
+            animation: spin 8s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            50% {
+                width: 100px;
+                height: 100px;
+                opacity: 0.1;
+            }
+            100% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            font-size: 3rem;
+            margin-top: 30px;
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: scale(1.5); /* Zoom effect */
+        }
+        h2{
+            color: red;
+            font-size: xx-large;
+            font-style: italic;
+            font-weight: bolder;
+        }
+        h3{
+            color: rgb(0, 0, 0);
+            font-size: xx-large;
+            font-style: italic;
+            font-weight: bolder;
+        }
+        .congratulations {
+            margin-top: 20px;
+            font-size: 1.8rem;
+            color: #ffe600;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .congratulations.show {
+            opacity: 1;
+            transform: scale(1); /* Pop animation */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn {
+                font-size: 1.2rem;
+                padding: 12px 30px;
+            }
+
+            .result {
+                font-size: 2.5rem;
+            }
+
+            .congratulations {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                font-size: 1rem;
+                padding: 10px 25px;
+            }
+
+            .result {
+                font-size: 2rem;
+            }
+
+            .congratulations {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <H3>ROMAN VLOG 0504</H3>
+        <h1>Lucky Draw Spin</h1>
+       <h2> <marquee behavior="scroll" direction="left" scrollamount="5" scrolldelay="50">
+            Subscribe to Roman Vlog 0504 to get a reward!
+        </marquee> </h2>
+        <button class="btn" id="spinButton">Spin to Get Your Lucky Number</button>
+        <div class="result" id="resultDisplay">---</div>
+        <div class="congratulations" id="congratsMessage">Congratulations! 🎉</div>
+        <a href="home.html"> <button class="btn">
+         Back </button>
+       </button></a>
+    </div>
+
+    <script>
+        // Create an array of numbers from 999 to 4999
+        let numbers = [];
+        for (let i = 999; i <= 4999; i++) {
+            numbers.push(i);
+        }
+
+        // Shuffle the numbers for randomness
+        numbers = numbers.sort(() => Math.random() - 0.5);
+
+        // Track used numbers
+        let usedNumbers = new Set();
+
+        const spinButton = document.getElementById('spinButton');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const congratsMessage = document.getElementById('congratsMessage');
+
+        spinButton.addEventListener('click', function() {
+            if (numbers.length === 0) {
+                alert('All numbers have been drawn.');
+                return;
+            }
+
+            // Add spin animation to button
+            spinButton.classList.add('spin');
+            resultDisplay.classList.remove('show');
+            congratsMessage.classList.remove('show');
+            spinButton.disabled = true;
+
+            // Start an 8-second countdown
+            let countdown = 8;
+            spinButton.textContent = `Spinning... ${countdown}`;
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    spinButton.textContent = `Spinning... ${countdown}`;
+                } else {
+                    clearInterval(countdownInterval);
+
+                    // Remove spin animation and restore button text
+                    spinButton.classList.remove('spin');
+                    spinButton.textContent = 'Spin to Get Your Lucky Number';
+
+                    let newNumber;
+                    
+                    // Generate a unique number that hasn't been used yet
+                    do {
+                        newNumber = numbers.pop();
+                    } while (usedNumbers.has(newNumber) && numbers.length > 0);
+
+                    // Mark number as used
+                    usedNumbers.add(newNumber);
+
+                    // Display the number with zoom effect
+                    resultDisplay.textContent = newNumber;
+                    resultDisplay.classList.add('show');
+
+                    // Show the congratulatory message with pop animation
+                    setTimeout(() => {
+                        congratsMessage.classList.add('show');
+                    }, 500);  // Slight delay to allow zoom effect to complete
+
+                    spinButton.disabled = false;
+                }
+            }, 1000); // Update countdown every second
+        });
+    </script>
+
+</body>
+</html>
